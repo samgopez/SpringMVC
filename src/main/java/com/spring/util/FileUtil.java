@@ -12,7 +12,8 @@ public class FileUtil {
     public boolean writeToFile(JSONArray jsonArray) {
         boolean status = true;
         try {
-            File file = new File("D:\\JSON\\students.json");
+            ClassLoader classLoader = getClass().getClassLoader();
+            File file = new File(classLoader.getResource("json/students.json").getFile());
 
             if (!file.exists()) {
                 file.createNewFile();
@@ -34,7 +35,10 @@ public class FileUtil {
 
     public FileReader getFile() {
         try {
-            return new FileReader("D:\\JSON\\students.json");
+            ClassLoader classLoader = getClass().getClassLoader();
+            File file = new File(classLoader.getResource("json/students.json").getFile());
+
+            return new FileReader(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
