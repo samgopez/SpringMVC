@@ -12,5 +12,7 @@ public interface StudentService {
 
     Message addStudent(Student student);
     Message updateStudent(Student student);
+    Message deleteStudentById(long id);
+    Student getStudentById(long id);
     List<Student> getStudentList();
 }

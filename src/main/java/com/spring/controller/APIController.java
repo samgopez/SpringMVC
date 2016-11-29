@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -55,7 +52,7 @@ public class APIController {
         Message message = new Message();
 
         if (validation.isValid(student)) {
-        message = studentService.updateStudent(student);
+            message = studentService.updateStudent(student);
 
             return new ResponseEntity<Message>(message, HttpStatus.OK);
         } else {
@@ -66,8 +63,48 @@ public class APIController {
         }
     }
 
+    @RequestMapping(value = "/API/deleteStudent/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Message> deleteStudentById(@PathVariable long id) {
+        logger.debug("Start deleteStudentById for /API/deleteStudent/{id}");
+        Validation validation = new Validation();
+        Message message = new Message();
+
+        if (validation.isValid(id)) {
+            message = studentService.deleteStudentById(id);
+
+            return new ResponseEntity<Message>(message, HttpStatus.OK);
+        } else {
+            message.setMessage("Invalid id");
+            message.setStatus(false);
+
+            return new ResponseEntity<Message>(message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/API/viewStudent/{id}", method = RequestMethod.POST)
+    public ResponseEntity viewStudentById(@PathVariable long id) {
+        Validation validation = new Validation();
+        Student student;
+
+        if (validation.isValid(id)) {
+            student = studentService.getStudentById(id);
+
+            if (student.getId() > 0) {
+                return new ResponseEntity<Student>(student, HttpStatus.OK);
+            } else {
+                Message message = new Message("No student found", false);
+
+                return new ResponseEntity<Message>(message, HttpStatus.NOT_FOUND);
+            }
+        } else {
+            Message message = new Message("Invalid id", false);
+
+            return new ResponseEntity<Message>(message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/API/viewStudentList", method = RequestMethod.POST)
-    public ResponseEntity<List<Student>> viewStudent() {
+    public ResponseEntity<List<Student>> viewStudentList() {
         List<Student> studentList = studentService.getStudentList();
 
         return new ResponseEntity<List<Student>>(studentList, HttpStatus.OK);

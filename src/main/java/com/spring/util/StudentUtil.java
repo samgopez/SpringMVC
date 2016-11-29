@@ -1,6 +1,7 @@
 package com.spring.util;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +16,18 @@ public class StudentUtil {
         logger.debug("Start incrementId()");
         JsonUtil jsonUtil = new JsonUtil();
         JSONArray jsonArray = jsonUtil.getFileJSONArray();
-        long jsonArraySize = jsonArray.size();
+        long lastId = 0;
 
-        return jsonArraySize + 1;
+        if (jsonArray.isEmpty()) {
+            lastId += 1;
+        }
+
+        for (Object aJsonArray: jsonArray) {
+            JSONObject jsonObject = (JSONObject) aJsonArray;
+            lastId = (Long) jsonObject.get("id");
+            lastId += 1;
+        }
+
+        return lastId;
     }
 }

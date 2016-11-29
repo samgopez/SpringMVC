@@ -39,7 +39,7 @@ public class StudentServiceImpl implements StudentService {
         logger.debug("Start addStudent");
         JSONObject jsonObject;
         JSONArray jsonArray;
-        Message message = new Message("failed", false);
+        Message message = new Message("Failed", false);
         StudentUtil studentUtil = new StudentUtil();
 
         student.setId(studentUtil.incrementId());
@@ -62,7 +62,7 @@ public class StudentServiceImpl implements StudentService {
         logger.debug("Start updateStudent");
         JSONObject jsonObject;
         JSONArray jsonArray;
-        Message message = new Message("failed", false);
+        Message message = new Message("Failed", false);
 
         if (student.getId() > 0) {
             jsonArray = jsonUtil.getFileJSONArray();
@@ -76,7 +76,7 @@ public class StudentServiceImpl implements StudentService {
                     jsonArray.add(newJsonObject);
 
                     if (fileUtil.writeToFile(jsonArray)) {
-                        message.setMessage("success");
+                        message.setMessage("Success");
                         message.setStatus(true);
                     }
                 }
@@ -84,6 +84,58 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return message;
+    }
+
+    @Override
+    public Message deleteStudentById(long id) {
+        logger.debug("Start deleteStudent()");
+        JSONObject jsonObject;
+        JSONArray jsonArray;
+        Message message = new Message("Failed", false);
+
+        if (id > 0) {
+            jsonArray = jsonUtil.getFileJSONArray();
+
+            for (Object aJsonArray : jsonArray) {
+                jsonObject = (JSONObject) aJsonArray;
+
+                if (jsonObject.get("id").equals(id)) {
+                    jsonArray.remove(jsonObject);
+
+                    if (fileUtil.writeToFile(jsonArray)) {
+                        message.setMessage("Success");
+                        message.setStatus(true);
+                    }
+                }
+            }
+        }
+
+        return message;
+    }
+
+    @Override
+    public Student getStudentById(long id) {
+        logger.debug("Start getStudentById");
+        Student student = new Student();
+        JSONObject jsonObject;
+
+        JSONArray jsonArray = jsonUtil.getFileJSONArray();
+
+        for (Object aJsonArray : jsonArray) {
+            jsonObject = (JSONObject) aJsonArray;
+            if (jsonObject.get("id").equals(id)) {
+                student.setId((Long) jsonObject.get("id"));
+                student.setGivenName((String) jsonObject.get("givenName"));
+                student.setMiddleName((String) jsonObject.get("middleName"));
+                student.setLastName((String) jsonObject.get("lastName"));
+                student.setAge((Long) jsonObject.get("age"));
+                student.setAddress((String) jsonObject.get("address"));
+
+                break;
+            }
+        }
+
+        return student;
     }
 
     @Override
