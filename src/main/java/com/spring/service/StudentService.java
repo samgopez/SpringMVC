@@ -11,5 +11,6 @@ import java.util.List;
 public interface StudentService {
 
     Message addStudent(Student student);
+    Message updateStudent(Student student);
     List<Student> getStudentList();
 }

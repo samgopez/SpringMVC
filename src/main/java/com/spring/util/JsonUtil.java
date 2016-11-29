@@ -5,6 +5,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +16,10 @@ import java.io.IOException;
  */
 public class JsonUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger(JsonUtil.class);
+
     public JSONObject addToJSONObject(Student student) {
+        logger.debug("Start addToJSONObject()");
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("id", student.getId());
@@ -28,6 +33,7 @@ public class JsonUtil {
     }
 
     public JSONArray getFileJSONArray() {
+        logger.debug("Start getFileJSONArray()");
         FileUtil fileUtil = new FileUtil();
         JSONParser jsonParser = new JSONParser();
         JSONArray jsonArray = new JSONArray();
@@ -38,9 +44,9 @@ public class JsonUtil {
 
             fileReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error: ", e);
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error("Error: ", e);
         }
 
         return jsonArray;

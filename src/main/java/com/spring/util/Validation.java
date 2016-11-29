@@ -1,13 +1,18 @@
 package com.spring.util;
 
 import com.spring.model.Student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Sam on 28/11/2016.
  */
 public class Validation {
 
+    private static final Logger logger = LoggerFactory.getLogger(StudentUtil.class);
+
     public boolean isValid(long id) {
+        logger.debug("Start isValid() for id");
 
         boolean status = id <= 0 ? false : true;
 
@@ -15,6 +20,8 @@ public class Validation {
     }
 
     public boolean isValid(Student student) {
+        logger.debug("Start isValid() for student");
+
         boolean status = true;
 
         if (student == null) {

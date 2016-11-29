@@ -1,5 +1,6 @@
 package com.spring.service;
 
+import com.spring.controller.APIController;
 import com.spring.model.Message;
 import com.spring.model.Student;
 import com.spring.util.FileUtil;
@@ -9,6 +10,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -22,6 +25,7 @@ import java.util.List;
  */
 public class StudentServiceImpl implements StudentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
     private JsonUtil jsonUtil = new JsonUtil();
     private FileUtil fileUtil = new FileUtil();
     private JdbcTemplate jdbcTemplate;
@@ -32,6 +36,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Message addStudent(Student student) {
+        logger.debug("Start addStudent");
         JSONObject jsonObject;
         JSONArray jsonArray;
         Message message = new Message("failed", false);
@@ -53,7 +58,37 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Message updateStudent(Student student) {
+        logger.debug("Start updateStudent");
+        JSONObject jsonObject;
+        JSONArray jsonArray;
+        Message message = new Message("failed", false);
+
+        if (student.getId() > 0) {
+            jsonArray = jsonUtil.getFileJSONArray();
+
+            for (Object aJsonArray : jsonArray) {
+                jsonObject = (JSONObject) aJsonArray;
+
+                if (jsonObject.get("id").equals(student.getId())) {
+                    jsonArray.remove(jsonObject);
+                    JSONObject newJsonObject = jsonUtil.addToJSONObject(student);
+                    jsonArray.add(newJsonObject);
+
+                    if (fileUtil.writeToFile(jsonArray)) {
+                        message.setMessage("success");
+                        message.setStatus(true);
+                    }
+                }
+            }
+        }
+
+        return message;
+    }
+
+    @Override
     public List<Student> getStudentList() {
+        logger.debug("Start getStudentList");
         List<Student> studentList = new ArrayList<Student>();
         JSONObject jsonObject;
 

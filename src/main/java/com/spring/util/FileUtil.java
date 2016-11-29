@@ -1,6 +1,8 @@
 package com.spring.util;
 
 import org.json.simple.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
@@ -9,11 +11,13 @@ import java.io.*;
  */
 public class FileUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+
     public boolean writeToFile(JSONArray jsonArray) {
+        logger.debug("Start writeToFile()");
         boolean status = true;
         try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            File file = new File(classLoader.getResource("json/students.json").getFile());
+            File file = new File("C:\\Users\\Sam\\IdeaProjects\\SpringMVC\\json\\students.json");
 
             if (!file.exists()) {
                 file.createNewFile();
@@ -26,7 +30,7 @@ public class FileUtil {
             fileWriter.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error: ", e);
             status = false;
         }
 
@@ -34,13 +38,13 @@ public class FileUtil {
     }
 
     public FileReader getFile() {
+        logger.debug("Start getFile()");
         try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            File file = new File(classLoader.getResource("json/students.json").getFile());
+            File file = new File("C:\\Users\\Sam\\IdeaProjects\\SpringMVC\\json\\students.json");
 
             return new FileReader(file);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Error: ", e);
             return null;
         }
     }

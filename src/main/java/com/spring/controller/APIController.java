@@ -32,12 +32,30 @@ public class APIController {
 
     @RequestMapping(value = "/API/addStudent", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<Message> addStudent(@ModelAttribute Student student) {
-        logger.debug("Start addStudent for /addStudent");
+        logger.debug("Start addStudent for /API/addStudent");
         Validation validation = new Validation();
         Message message = new Message();
 
         if (validation.isValid(student)) {
             message = studentService.addStudent(student);
+
+            return new ResponseEntity<Message>(message, HttpStatus.OK);
+        } else {
+            message.setMessage("Empty/Null input/s");
+            message.setStatus(false);
+
+            return new ResponseEntity<Message>(message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/API/updateStudent", method = RequestMethod.PUT)
+    public ResponseEntity<Message> updateStudent(@ModelAttribute Student student) {
+        logger.debug("Start updateStudent for /API/updateStudent");
+        Validation validation = new Validation();
+        Message message = new Message();
+
+        if (validation.isValid(student)) {
+        message = studentService.updateStudent(student);
 
             return new ResponseEntity<Message>(message, HttpStatus.OK);
         } else {
