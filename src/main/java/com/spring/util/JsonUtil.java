@@ -23,11 +23,11 @@ public class JsonUtil {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("id", student.getId());
-        jsonObject.put("givenName", student.getGivenName());
-        jsonObject.put("middleName", student.getMiddleName());
-        jsonObject.put("lastName", student.getLastName());
+        jsonObject.put("givenName", student.getGivenName().toLowerCase());
+        jsonObject.put("middleName", student.getMiddleName().toLowerCase());
+        jsonObject.put("lastName", student.getLastName().toLowerCase());
         jsonObject.put("age", student.getAge());
-        jsonObject.put("address", student.getAddress());
+        jsonObject.put("address", student.getAddress().toLowerCase());
 
         return jsonObject;
     }
@@ -46,7 +46,8 @@ public class JsonUtil {
         } catch (IOException e) {
             logger.error("Error: ", e);
         } catch (ParseException e) {
-            logger.error("Error: ", e);
+            //logger.error("Error: ", e);
+            return jsonArray;
         }
 
         return jsonArray;

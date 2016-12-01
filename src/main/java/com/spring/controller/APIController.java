@@ -103,6 +103,13 @@ public class APIController {
         }
     }
 
+    @RequestMapping(value = "/API/searchStudentByName/{name}", method = RequestMethod.POST)
+    public ResponseEntity<List<Student>> searchStudentByName(@PathVariable String name) {
+        List<Student> studentList = studentService.getStudentListByName(name);
+
+        return new ResponseEntity<List<Student>>(studentList, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/API/viewStudentList", method = RequestMethod.POST)
     public ResponseEntity<List<Student>> viewStudentList() {
         List<Student> studentList = studentService.getStudentList();

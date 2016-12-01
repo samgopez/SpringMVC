@@ -14,5 +14,6 @@ public interface StudentService {
     Message updateStudent(Student student);
     Message deleteStudentById(long id);
     Student getStudentById(long id);
+    List<Student> getStudentListByName(String searchValue);
     List<Student> getStudentList();
 }

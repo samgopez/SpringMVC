@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ public class StudentServiceImpl implements StudentService {
         jsonArray.add(jsonObject);
 
         if (fileUtil.writeToFile(jsonArray)) {
-            message.setMessage("success");
+            message.setMessage("Success");
             message.setStatus(true);
         }
 
@@ -96,11 +97,13 @@ public class StudentServiceImpl implements StudentService {
         if (id > 0) {
             jsonArray = jsonUtil.getFileJSONArray();
 
-            for (Object aJsonArray : jsonArray) {
-                jsonObject = (JSONObject) aJsonArray;
+            Iterator iterator = jsonArray.iterator();
+
+            while (iterator.hasNext()) {
+                jsonObject = (JSONObject) iterator.next();
 
                 if (jsonObject.get("id").equals(id)) {
-                    jsonArray.remove(jsonObject);
+                    iterator.remove();
 
                     if (fileUtil.writeToFile(jsonArray)) {
                         message.setMessage("Success");
@@ -136,6 +139,34 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return student;
+    }
+
+    @Override
+    public List<Student> getStudentListByName(String searchValue) {
+        logger.debug("Start getStudentListByName()");
+        List<Student> studentList = new ArrayList<Student>();
+        JSONObject jsonObject;
+
+        JSONArray jsonArray = jsonUtil.getFileJSONArray();
+
+        for (Object aJsonArray : jsonArray) {
+            jsonObject = (JSONObject) aJsonArray;
+
+            if (jsonObject.containsValue(searchValue.toLowerCase())) {
+                Student student = new Student();
+
+                student.setId((Long) jsonObject.get("id"));
+                student.setGivenName((String) jsonObject.get("givenName"));
+                student.setMiddleName((String) jsonObject.get("middleName"));
+                student.setLastName((String) jsonObject.get("lastName"));
+                student.setAge((Long) jsonObject.get("age"));
+                student.setAddress((String) jsonObject.get("address"));
+
+                studentList.add(student);
+            }
+        }
+
+        return studentList;
     }
 
     @Override
