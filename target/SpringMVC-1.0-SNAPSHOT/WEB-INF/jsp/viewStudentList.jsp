@@ -15,7 +15,16 @@
     <div align="center">
         <h1>Student List</h1>
         <a href="/addStudent">Add New Student</a>
-        <a href="/searchStudent">Search</a>
+        <a href="/searchStudent">Search Student</a>
+        <br /><br />
+        <form action="/sortStudentList" method="post">
+            Sort by:
+            <select name="sortValue">
+                <option value="id">ID</option>
+                <option value="givenName">First Name</option>
+            </select>
+            <input type="submit" value="Submit" />
+        </form>
         <table border="1">
             <th>ID</th>
             <th>First Name</th>

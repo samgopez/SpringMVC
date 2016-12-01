@@ -7,8 +7,6 @@ import com.spring.util.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,15 +25,6 @@ public class JSPController {
 
     @Autowired
     private StudentService studentService;
-
-    @RequestMapping(value = "/viewStudentList")
-    public ModelAndView viewStudentList(ModelAndView model) {
-        List<Student> studentList = studentService.getStudentList();
-        model.addObject("studentList", studentList);
-        model.setViewName("viewStudentList");
-
-        return model;
-    }
 
     @RequestMapping(value = "/addStudent")
     public ModelAndView showAddStudentForm(HttpServletRequest request) {
@@ -107,6 +96,16 @@ public class JSPController {
         return new ModelAndView("redirect:/viewStudentList");
     }
 
+    @RequestMapping(value = "/viewStudentList")
+    public ModelAndView viewStudentList(ModelAndView model) {
+        List<Student> studentList = studentService.getStudentList();
+
+        model.addObject("studentList", studentList);
+        model.setViewName("viewStudentList");
+
+        return model;
+    }
+
     @RequestMapping(value = "/searchStudent")
     public ModelAndView showSearchStudent() {
         return new ModelAndView("searchStudent");
@@ -114,11 +113,22 @@ public class JSPController {
 
     @RequestMapping(value = "/searchStudentByName", method = RequestMethod.POST)
     public ModelAndView searchStudentByName(@RequestParam String searchValue) {
-        List<Student> studentList = studentService.getStudentListByName(searchValue);
         ModelAndView model = new ModelAndView();
+        List<Student> studentList = studentService.getStudentListByName(searchValue);
 
         model.addObject("studentList", studentList);
         model.setViewName("searchStudent");
+
+        return model;
+    }
+
+    @RequestMapping(value = "/sortStudentList", method = RequestMethod.POST)
+    public ModelAndView sortStudentList(@RequestParam String sortValue) {
+        ModelAndView model = new ModelAndView();
+        List<Student> studentList = studentService.getSortedStudent(sortValue);
+
+        model.addObject("studentList", studentList);
+        model.setViewName("viewStudentList");
 
         return model;
     }

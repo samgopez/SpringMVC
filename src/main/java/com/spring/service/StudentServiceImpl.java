@@ -1,25 +1,17 @@
 package com.spring.service;
 
-import com.spring.controller.APIController;
 import com.spring.model.Message;
 import com.spring.model.Student;
 import com.spring.util.FileUtil;
-import com.spring.util.JsonUtil;
 import com.spring.util.StudentUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Sam on 28/11/2016.
@@ -27,8 +19,8 @@ import java.util.List;
 public class StudentServiceImpl implements StudentService {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
-    private JsonUtil jsonUtil = new JsonUtil();
     private FileUtil fileUtil = new FileUtil();
+    private StudentUtil studentUtil = new StudentUtil();
     private JdbcTemplate jdbcTemplate;
 
     public StudentServiceImpl(DataSource dataSource) {
@@ -45,8 +37,8 @@ public class StudentServiceImpl implements StudentService {
 
         student.setId(studentUtil.incrementId());
 
-        jsonObject =  jsonUtil.addToJSONObject(student);
-        jsonArray = jsonUtil.getFileJSONArray();
+        jsonObject =  studentUtil.addToJSONObject(student);
+        jsonArray = studentUtil.getFileJSONArray();
 
         jsonArray.add(jsonObject);
 
@@ -66,14 +58,14 @@ public class StudentServiceImpl implements StudentService {
         Message message = new Message("Failed", false);
 
         if (student.getId() > 0) {
-            jsonArray = jsonUtil.getFileJSONArray();
+            jsonArray = studentUtil.getFileJSONArray();
 
             for (Object aJsonArray : jsonArray) {
                 jsonObject = (JSONObject) aJsonArray;
 
                 if (jsonObject.get("id").equals(student.getId())) {
                     jsonArray.remove(jsonObject);
-                    JSONObject newJsonObject = jsonUtil.addToJSONObject(student);
+                    JSONObject newJsonObject = studentUtil.addToJSONObject(student);
                     jsonArray.add(newJsonObject);
 
                     if (fileUtil.writeToFile(jsonArray)) {
@@ -95,7 +87,7 @@ public class StudentServiceImpl implements StudentService {
         Message message = new Message("Failed", false);
 
         if (id > 0) {
-            jsonArray = jsonUtil.getFileJSONArray();
+            jsonArray = studentUtil.getFileJSONArray();
 
             Iterator iterator = jsonArray.iterator();
 
@@ -122,7 +114,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = new Student();
         JSONObject jsonObject;
 
-        JSONArray jsonArray = jsonUtil.getFileJSONArray();
+        JSONArray jsonArray = studentUtil.getFileJSONArray();
 
         for (Object aJsonArray : jsonArray) {
             jsonObject = (JSONObject) aJsonArray;
@@ -142,12 +134,34 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public List<Student> getSortedStudent(final String sortValue) {
+        logger.debug("Start getSortedStudent()");
+        logger.debug(sortValue);
+
+        JSONArray jsonArray = studentUtil.getFileJSONArray();
+
+        List<Student> studentList = studentUtil.addJsonArrayToList(jsonArray);
+
+        if (sortValue.equals("givenName")) {
+            Collections.sort(studentList, new Comparator<Student>() {
+                @Override
+                public int compare(Student o1, Student o2) {
+                    return o1.getGivenName().compareTo(o2.getGivenName());
+                }
+            });
+        }
+
+        return studentList;
+
+    }
+
+    @Override
     public List<Student> getStudentListByName(String searchValue) {
         logger.debug("Start getStudentListByName()");
         List<Student> studentList = new ArrayList<Student>();
         JSONObject jsonObject;
 
-        JSONArray jsonArray = jsonUtil.getFileJSONArray();
+        JSONArray jsonArray = studentUtil.getFileJSONArray();
 
         for (Object aJsonArray : jsonArray) {
             jsonObject = (JSONObject) aJsonArray;
@@ -172,25 +186,9 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> getStudentList() {
         logger.debug("Start getStudentList");
-        List<Student> studentList = new ArrayList<Student>();
-        JSONObject jsonObject;
 
-        JSONArray jsonArray = jsonUtil.getFileJSONArray();
+        JSONArray jsonArray = studentUtil.getFileJSONArray();
 
-        for (Object aJsonArray : jsonArray) {
-            jsonObject = (JSONObject) aJsonArray;
-            Student student = new Student();
-
-            student.setId((Long) jsonObject.get("id"));
-            student.setGivenName((String) jsonObject.get("givenName"));
-            student.setMiddleName((String) jsonObject.get("middleName"));
-            student.setLastName((String) jsonObject.get("lastName"));
-            student.setAge((Long) jsonObject.get("age"));
-            student.setAddress((String) jsonObject.get("address"));
-
-            studentList.add(student);
-        }
-
-        return studentList;
+        return studentUtil.addJsonArrayToList(jsonArray);
     }
 }
